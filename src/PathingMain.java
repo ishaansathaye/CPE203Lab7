@@ -241,7 +241,7 @@ public class PathingMain extends PApplet
             }
          }
       }
-      return false;
+      return found;
    }
 
    private static boolean withinBounds(Point p, GridValues[][] grid)
