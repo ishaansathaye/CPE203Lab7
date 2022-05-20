@@ -165,7 +165,8 @@ public class PathingMain extends PApplet
          initialize_grid(grid);
 
 			//EXAMPLE - replace with dfs	
-         moveOnce(wPos, grid, path);
+         // moveOnce(wPos, grid, path);
+         dfs(wPos, grid, path);
       }
       else if (key == 'p')
       {
@@ -183,24 +184,64 @@ public class PathingMain extends PApplet
 		in one direction for one tile - it mostly is for illustrating
 		how you might test the occupancy grid and add nodes to path!
 	*/
-   private boolean moveOnce(Point pos, GridValues[][] grid, List<Point> path)
-   {
-      Point rightN = new Point(pos.x +1, pos.y );
+   // private boolean moveOnce(Point pos, GridValues[][] grid, List<Point> path)
+   // {
+   //    Point rightN = new Point(pos.x +1, pos.y );
      
-		//test if this is a valid grid cell 
-		if (withinBounds(rightN, grid)  &&
-         grid[rightN.y][rightN.x] != GridValues.OBSTACLE && 
-         grid[rightN.y][rightN.x] != GridValues.SEARCHED)
-      {
-			//check if my right neighbor is the goal
-      	if (grid[rightN.y][rightN.x] == GridValues.GOAL) {
-         	path.add(0, rightN);
-         	return true;
-      	}
-			//set this value as searched
-      	grid[rightN.y][rightN.x] = GridValues.SEARCHED;
+	// 	//test if this is a valid grid cell 
+	// 	if (withinBounds(rightN, grid)  &&
+   //       grid[rightN.y][rightN.x] != GridValues.OBSTACLE && 
+   //       grid[rightN.y][rightN.x] != GridValues.SEARCHED)
+   //    {
+	// 		//check if my right neighbor is the goal
+   //    	if (grid[rightN.y][rightN.x] == GridValues.GOAL) {
+   //       	path.add(0, rightN);
+   //       	return true;
+   //    	}
+	// 		//set this value as searched
+   //    	grid[rightN.y][rightN.x] = GridValues.SEARCHED;
+   //    }
+	// 	return false;
+   // }
+
+   private boolean dfs(Point pos, GridValues[][] grid, List<Point> path) {
+
+      boolean found = false;
+
+      if (grid[pos.y][pos.x] == GridValues.GOAL) {
+
+         found = true;
+         return found;
+
+      } else {
+
+         grid[pos.y][pos.x] = GridValues.SEARCHED;
+         
+         List<Point> surroundingPoints = new ArrayList<Point>();
+         surroundingPoints.add(new Point(pos.x + 1, pos.y));
+         surroundingPoints.add(new Point(pos.x - 1, pos.y));
+         surroundingPoints.add(new Point(pos.x, pos.y + 1));
+         surroundingPoints.add(new Point(pos.x, pos.y - 1));
+
+         for (Point p : surroundingPoints) {
+
+            if (!found) {
+               if (withinBounds(p, grid) && grid[p.y][p.x] != GridValues.OBSTACLE && grid[p.y][p.x] != GridValues.SEARCHED) {
+                  
+                  path.add(0, p);
+                  found = dfs(p, grid, path);
+
+                  if (found) {
+                     return found;
+                  } else {
+                     path.remove(0);
+                  }
+
+               }
+            }
+         }
       }
-		return false;
+      return false;
    }
 
    private static boolean withinBounds(Point p, GridValues[][] grid)
